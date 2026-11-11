@@ -1,0 +1,658 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="A question for Prince.">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
+<title>A Question for Prince</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,500;1,6..96,500&family=DM+Sans:wght@400;500;700&family=Roboto+Slab:wght@800&display=swap">
+<style>
+/* Layout: one left-aligned column of large italic type, controls beneath it, soft hearts drifting behind. */
+:root {
+  --bg: #fbf1f3;
+  --fg: #2b0f1d;
+  --muted: #7d5565;
+  --accent: #b3123f;
+  --accent-ink: #fff7f9;
+  --gold: #c98a1b;
+  --glow: #f4c6d2;
+  --line: #e8cdd5;
+  --font-display: 'Bodoni Moda', 'Didot', Georgia, serif;
+  --font-body: 'DM Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #1a0912;
+    --fg: #fbe8ee;
+    --muted: #c79aab;
+    --accent: #ff5c88;
+    --accent-ink: #2b0716;
+    --gold: #f2c56b;
+    --glow: #4c1631;
+    --line: #3d1a2b;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #1a0912;
+  --fg: #fbe8ee;
+  --muted: #c79aab;
+  --accent: #ff5c88;
+  --accent-ink: #2b0716;
+  --gold: #f2c56b;
+  --glow: #4c1631;
+  --line: #3d1a2b;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { min-height: 100%; }
+body { margin: 0; }
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.5;
+  padding-top: 72px;
+  padding-bottom: 24px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  overflow-x: hidden;
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(60rem 40rem at 85% 110%, var(--glow), transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+#fx {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+main {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 62rem;
+  margin: 0 auto;
+  min-height: 78vh;
+  display: grid;
+  align-content: center;
+}
+.screen { display: grid; gap: 1.75rem; min-width: 0; animation: fade .5s ease both; }
+@keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+
+.eyebrow {
+  font-size: .78rem;
+  font-weight: 700;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.big {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 500;
+  font-size: clamp(2.3rem, 8vw, 5.2rem);
+  line-height: 1.04;
+  letter-spacing: -.01em;
+  max-width: 15ch;
+  margin: 0;
+  text-wrap: balance;
+  overflow-wrap: break-word;
+}
+.big em { color: var(--accent); font-style: italic; }
+.sub { max-width: 34rem; color: var(--muted); font-size: 1.05rem; margin: 0; }
+
+.progress { display: flex; gap: .4rem; }
+.progress i { width: 1.6rem; height: 3px; border-radius: 2px; background: var(--line); }
+.progress i.on { background: var(--accent); }
+
+.row { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; }
+.btn {
+  font: inherit;
+  font-weight: 700;
+  min-height: 48px;
+  border-radius: 999px;
+  border: 2px solid var(--accent);
+  padding: .7em 1.6em;
+  cursor: pointer;
+  color: var(--accent);
+  background: transparent;
+  transition: transform .15s ease, background .15s ease;
+  max-width: 100%;
+}
+.btn:hover { transform: translateY(-2px); }
+.btn:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+.btn.fill { background: var(--accent); color: var(--accent-ink); }
+.btn.yes {
+  font-size: min(calc(1.05rem + var(--n, 0) * .12rem), 1.8rem);
+  padding: .65em 1.5em;
+}
+.btn.no.away {
+  position: fixed;
+  z-index: 5;
+  transition: left .28s cubic-bezier(.3,1.4,.5,1), top .28s cubic-bezier(.3,1.4,.5,1);
+}
+.link {
+  font: inherit;
+  background: none;
+  border: 0;
+  padding: .5rem 0;
+  color: var(--muted);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.link:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+.hint { min-height: 1.5em; margin: 0; color: var(--muted); font-size: .95rem; }
+.sign {
+  font-family: 'Roboto Slab', Rockwell, 'Courier New', Georgia, serif;
+  font-style: normal;
+  font-weight: 800;
+  font-size: 1.7rem;
+  letter-spacing: .01em;
+  text-transform: none;
+  margin: 0;
+}
+
+.music {
+  position: fixed;
+  z-index: 6;
+  top: calc(env(safe-area-inset-top, 0px) + 12px);
+  right: max(12px, env(safe-area-inset-right, 0px));
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  font: inherit;
+  font-size: .85rem;
+  font-weight: 700;
+  min-height: 44px;
+  padding: .4rem .9rem;
+  border-radius: 999px;
+  border: 1.5px solid var(--line);
+  background: var(--bg);
+  color: var(--fg);
+  cursor: pointer;
+}
+.music svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.music[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
+.music[aria-pressed="true"] .slash { display: none; }
+.music[aria-pressed="false"] .waves { display: none; }
+.music:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .screen { animation: none; }
+  .btn, .btn.no.away { transition: none; }
+}
+</style>
+
+</head>
+<body>
+<canvas id="fx" aria-hidden="true"></canvas>
+<button class="music" id="music" type="button" aria-pressed="false" aria-label="Turn music on">
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M4 9v6h4l5 4V5L8 9H4z"/>
+    <g class="waves"><path d="M16.5 8.5a5 5 0 0 1 0 7"/><path d="M19 6a8.5 8.5 0 0 1 0 12"/></g>
+    <path class="slash" d="M17 9l5 6M22 9l-5 6"/>
+  </svg>
+  <span class="label">Music off</span>
+</button>
+<audio id="song" loop preload="none">
+  <source src="music/music.mp3" type="audio/mpeg">
+  <source src="music/music.m4a" type="audio/mp4">
+  <source src="music/music.ogg" type="audio/ogg">
+  <source src="music/music.wav" type="audio/wav">
+</audio>
+<main id="app">
+  <section class="screen" id="s-intro">
+    <div class="eyebrow">For Prince</div>
+    <p class="big" id="line" aria-live="polite"></p>
+    <div class="progress" id="progress" aria-hidden="true"></div>
+    <div class="row">
+      <button class="btn fill" id="next" type="button">Continue</button>
+    </div>
+    <p class="hint">Turn your sound on. Tapping Continue starts the music.</p>
+  </section>
+
+  <section class="screen" id="s-ask" hidden>
+    <div class="eyebrow">One question</div>
+    <h1 class="big">Prince, will you be my <em>girlfriend?</em></h1>
+    <div class="row" id="answers">
+      <button class="btn fill yes" id="yes" type="button">Yes</button>
+      <button class="btn no" id="no" type="button">No</button>
+    </div>
+    <p class="hint" id="hint" aria-live="polite">Take your time. The yes button is not going anywhere.</p>
+  </section>
+
+  <section class="screen" id="s-yes" hidden>
+    <div class="eyebrow">Official answer</div>
+    <h2 class="big" id="yes-title" tabindex="-1">You said <em>yes.</em></h2>
+    <p class="sub">Best answer I could have hoped for. Take a screenshot of this and send it to me so I know it's real.</p>
+    <p class="sign" id="sign"></p>
+    <div class="row">
+      <button class="link" id="replay" type="button">Replay</button>
+    </div>
+  </section>
+</main>
+
+<script>
+(function () {
+  var lines = [
+    "Prince,",
+    "I have been trying to find the right moment to ask you something.",
+    "There is no perfect moment, so I made this instead."
+  ];
+  var phrases = ["No", "Are you sure?", "Really sure?", "Think about it", "Please?", "I will bring snacks", "Last chance", "Okay, yes"];
+  var hints = [
+    "Take your time. The yes button is not going anywhere.",
+    "The no button seems nervous.",
+    "It keeps running away from you.",
+    "The yes button is getting bigger, just saying.",
+    "Everyone who knows us is rooting for yes.",
+    "You can still change your mind.",
+    "The no button is almost out of hiding places.",
+    "Fine, the no button gave up."
+  ];
+  var MAX = phrases.length - 1;
+
+  var $ = function (id) { return document.getElementById(id); };
+  var app = $("app");
+  var sIntro = $("s-intro"), sAsk = $("s-ask"), sYes = $("s-yes");
+  var lineEl = $("line"), progress = $("progress"), nextBtn = $("next");
+  var yes = $("yes"), no = $("no"), hint = $("hint"), row = $("answers");
+  var reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  var step = 0, tries = 0, lastDodge = 0;
+
+  function renderProgress() {
+    progress.innerHTML = "";
+    for (var i = 0; i < lines.length; i++) {
+      var b = document.createElement("i");
+      if (i <= step) b.className = "on";
+      progress.appendChild(b);
+    }
+  }
+  function renderStep() {
+    lineEl.textContent = lines[step];
+    lineEl.style.animation = "none";
+    void lineEl.offsetWidth;
+    lineEl.style.animation = reduced ? "none" : "rise .5s ease both";
+    renderProgress();
+  }
+  function show(el) {
+    [sIntro, sAsk, sYes].forEach(function (s) { s.hidden = s !== el; });
+  }
+
+  nextBtn.addEventListener("click", function () {
+    if (!musicTouched) { musicTouched = true; setMusic(true); }
+    if (step < lines.length - 1) { step++; renderStep(); }
+    else { show(sAsk); yes.focus({ preventScroll: true }); }
+  });
+
+  function resetNo() {
+    tries = 0;
+    no.classList.remove("away");
+    no.style.left = "";
+    no.style.top = "";
+    app.style.setProperty("--n", 0);
+    no.textContent = phrases[0];
+    hint.textContent = hints[0];
+  }
+
+  function overlaps(a, b, pad) {
+    return !(a.right + pad < b.left || a.left - pad > b.right || a.bottom + pad < b.top || a.top - pad > b.bottom);
+  }
+
+  function moveNo() {
+    var w = no.offsetWidth, h = no.offsetHeight, m = 16;
+    var vw = document.documentElement.clientWidth, vh = window.innerHeight;
+    if (!no.classList.contains("away")) {
+      var r = no.getBoundingClientRect();
+      no.style.left = r.left + "px";
+      no.style.top = r.top + "px";
+      no.classList.add("away");
+      void no.offsetWidth;
+    }
+    // Stay clear of the Yes button, the question text, the hint and the Music button.
+    var avoid = [yes, musicBtn, hint, sAsk.querySelector(".eyebrow"), sAsk.querySelector("h1")]
+      .map(function (e) { return e.getBoundingClientRect(); });
+    var x = vw - w - m, y = vh - h - m, i, j, clear;
+    for (i = 0; i < 80; i++) {
+      var cx = m + Math.random() * Math.max(0, vw - w - 2 * m);
+      var cy = m + Math.random() * Math.max(0, vh - h - 2 * m);
+      var box = { left: cx, top: cy, right: cx + w, bottom: cy + h };
+      clear = true;
+      for (j = 0; j < avoid.length; j++) {
+        if (overlaps(box, avoid[j], 14)) { clear = false; break; }
+      }
+      if (clear) { x = cx; y = cy; break; }
+    }
+    no.style.left = x + "px";
+    no.style.top = y + "px";
+  }
+
+  function dodge() {
+    if (tries >= MAX) return;
+    lastDodge = Date.now();
+    tries++;
+    app.style.setProperty("--n", tries);
+    no.textContent = phrases[tries];
+    hint.textContent = hints[tries];
+    if (tries >= MAX) {
+      no.classList.remove("away");
+      no.style.left = "";
+      no.style.top = "";
+    } else {
+      moveNo();
+    }
+  }
+
+  no.addEventListener("pointerenter", function (e) {
+    if (e.pointerType === "mouse") dodge();
+  });
+  no.addEventListener("pointerdown", function (e) {
+    if (e.pointerType !== "mouse" && tries < MAX) { e.preventDefault(); dodge(); }
+  });
+  no.addEventListener("click", function () {
+    if (tries >= MAX) accept();
+    else if (Date.now() - lastDodge > 450) dodge();
+  });
+  yes.addEventListener("click", accept);
+
+  function accept() {
+    show(sYes);
+    $("sign").textContent = "Your princess";
+    $("yes-title").focus({ preventScroll: true });
+    try { if (navigator.vibrate) navigator.vibrate([60, 40, 60]); } catch (e) {}
+    celebrate();
+    flourish();
+  }
+
+  $("replay").addEventListener("click", function () {
+    resetNo();
+    show(sAsk);
+    yes.focus({ preventScroll: true });
+  });
+
+  window.addEventListener("resize", function () {
+    if (no.classList.contains("away")) {
+      var maxX = Math.max(16, document.documentElement.clientWidth - no.offsetWidth - 16);
+      var maxY = Math.max(16, window.innerHeight - no.offsetHeight - 16);
+      no.style.left = Math.min(parseFloat(no.style.left) || 16, maxX) + "px";
+      no.style.top = Math.min(parseFloat(no.style.top) || 16, maxY) + "px";
+    }
+  });
+
+  /* ---------- music: a soft synthesized loop, no audio files ---------- */
+  var ac = null, master = null, sendBus = null;
+  var musicOn = false, musicTouched = false;
+  var timer = null, nextTime = 0, stepIdx = 0;
+  var BPM = 76, STEP = 60 / BPM / 2;
+  var CHORDS = [[60, 64, 67, 72], [57, 60, 64, 69], [53, 57, 60, 65], [55, 59, 62, 67]];
+  var BASS = [36, 33, 29, 31];
+  var PATTERN = [0, 1, 2, 3, 2, 1, 3, 2];
+  var musicBtn = $("music");
+
+  function hz(m) { return 440 * Math.pow(2, (m - 69) / 12); }
+
+  function setupAudio() {
+    var AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return false;
+    ac = new AC();
+    master = ac.createGain();
+    master.gain.value = 0;
+    var comp = ac.createDynamicsCompressor();
+    master.connect(comp);
+    comp.connect(ac.destination);
+    var dly = ac.createDelay(1.5);
+    dly.delayTime.value = (60 / BPM) * 0.75;
+    var fb = ac.createGain(); fb.gain.value = 0.35;
+    var wet = ac.createGain(); wet.gain.value = 0.35;
+    sendBus = ac.createGain();
+    sendBus.connect(dly);
+    dly.connect(fb); fb.connect(dly);
+    dly.connect(wet); wet.connect(master);
+    return true;
+  }
+
+  function tone(m, t, dur, type, vol, attack) {
+    var o = ac.createOscillator(), g = ac.createGain();
+    o.type = type;
+    o.frequency.value = hz(m);
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.linearRampToValueAtTime(vol, t + (attack || 0.01));
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(g);
+    g.connect(master);
+    g.connect(sendBus);
+    o.start(t);
+    o.stop(t + dur + 0.05);
+  }
+
+  function playStep(i, t) {
+    var bar = Math.floor(i / 8) % 4, pos = i % 8, ch = CHORDS[bar];
+    if (pos === 0) {
+      tone(BASS[bar], t, STEP * 7.5, "sine", 0.22, 0.03);
+      for (var k = 0; k < 3; k++) tone(ch[k], t, STEP * 8, "sine", 0.05, 0.4);
+    }
+    tone(ch[PATTERN[pos]], t, STEP * 1.8, "triangle", 0.11, 0.01);
+  }
+
+  function schedule() {
+    if (!ac) return;
+    while (nextTime < ac.currentTime + 0.5) {
+      playStep(stepIdx, nextTime);
+      nextTime += STEP;
+      stepIdx++;
+    }
+  }
+
+  // A song file in the music folder (music/music.mp3, .m4a, .ogg or .wav) plays instead of the built-in melody.
+  var songEl = $("song"), songOk = null, songErrs = 0;
+
+  function songFailed() {
+    if (songOk === false) return;
+    songOk = false;
+    if (musicOn) synth(true);
+  }
+  songEl.addEventListener("playing", function () { songOk = true; });
+  songEl.addEventListener("error", function () {
+    songErrs++;
+    if (songErrs >= songEl.querySelectorAll("source").length) songFailed();
+  }, true);
+
+  function setMusic(on) {
+    musicOn = on;
+    musicBtn.setAttribute("aria-pressed", on ? "true" : "false");
+    musicBtn.setAttribute("aria-label", on ? "Turn music off" : "Turn music on");
+    musicBtn.querySelector(".label").textContent = on ? "Music on" : "Music off";
+    if (on) {
+      // Unlock audio inside the tap itself, so the built-in melody can still start on iPhones if the song file is missing.
+      try { if (!ac) setupAudio(); if (ac) ac.resume(); } catch (e) {}
+      if (songOk === false) { synth(true); return; }
+      try {
+        var p = songEl.play();
+        if (p && p.catch) p.catch(function (err) {
+          if (err && err.name === "NotSupportedError") songFailed();
+        });
+      } catch (e) { songFailed(); }
+    } else {
+      try { songEl.pause(); } catch (e) {}
+      synth(false);
+    }
+  }
+
+  function synth(on) {
+    try {
+      if (on) {
+        if (!ac && !setupAudio()) return;
+        ac.resume();
+        master.gain.cancelScheduledValues(ac.currentTime);
+        master.gain.setTargetAtTime(0.5, ac.currentTime, 0.4);
+        if (!timer) {
+          nextTime = ac.currentTime + 0.1;
+          stepIdx = 0;
+          timer = setInterval(schedule, 120);
+        }
+      } else if (ac) {
+        master.gain.cancelScheduledValues(ac.currentTime);
+        master.gain.setTargetAtTime(0, ac.currentTime, 0.15);
+        setTimeout(function () { if (!musicOn && ac) ac.suspend(); }, 700);
+      }
+    } catch (e) {}
+  }
+
+  function flourish() {
+    if (!musicOn || !ac) return;
+    try {
+      var t = ac.currentTime + 0.05, notes = [72, 76, 79, 84, 88, 91, 96];
+      notes.forEach(function (m, i) { tone(m, t + i * 0.08, 1.4, "triangle", 0.12, 0.005); });
+    } catch (e) {}
+  }
+
+  musicBtn.addEventListener("click", function () {
+    musicTouched = true;
+    setMusic(!musicOn);
+  });
+  document.addEventListener("visibilitychange", function () {
+    try {
+      if (document.hidden) songEl.pause();
+      else if (musicOn && songOk === true) songEl.play();
+    } catch (e) {}
+    if (!ac) return;
+    try {
+      if (document.hidden) ac.suspend();
+      else if (musicOn) ac.resume();
+    } catch (e) {}
+  });
+
+  /* ---------- hearts and confetti ---------- */
+  var cv = $("fx"), ctx = cv.getContext("2d");
+  var W = 0, H = 0, dpr = 1;
+  var ambient = [], bits = [];
+
+  function size() {
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = window.innerWidth; H = window.innerHeight;
+    cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  function css(name) {
+    return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  }
+  function heart(x, y, s) {
+    ctx.beginPath();
+    ctx.moveTo(x, y + s * 0.4);
+    ctx.bezierCurveTo(x - s, y - s * 0.1, x - s * 0.6, y - s * 0.9, x, y - s * 0.4);
+    ctx.bezierCurveTo(x + s * 0.6, y - s * 0.9, x + s, y - s * 0.1, x, y + s * 0.4);
+    ctx.closePath();
+    ctx.fill();
+  }
+  function seedAmbient() {
+    ambient = [];
+    var n = W < 600 ? 9 : 16;
+    for (var i = 0; i < n; i++) {
+      ambient.push({
+        x: Math.random() * W, y: Math.random() * H,
+        s: 8 + Math.random() * 16, vy: 0.15 + Math.random() * 0.35,
+        ph: Math.random() * 6.28, a: 0.10 + Math.random() * 0.14
+      });
+    }
+  }
+  function celebrate() {
+    if (reduced) return;
+    var cols = [css("--accent"), css("--gold"), css("--fg"), css("--glow")];
+    function burst(cx, dir) {
+      for (var i = 0; i < 70; i++) {
+        var ang = (-Math.PI / 2) + dir * (0.15 + Math.random() * 0.7) * 0.9 + (Math.random() - 0.5) * 0.5;
+        var sp = 9 + Math.random() * 11;
+        bits.push({
+          x: cx, y: H + 10,
+          vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp,
+          s: 5 + Math.random() * 9, rot: Math.random() * 6.28, vr: (Math.random() - 0.5) * 0.3,
+          c: cols[(Math.random() * cols.length) | 0],
+          heart: Math.random() < 0.55, life: 1
+        });
+      }
+    }
+    burst(W * 0.15, 1);
+    burst(W * 0.85, -1);
+    setTimeout(function () { burst(W * 0.3, 1); burst(W * 0.7, -1); }, 450);
+    setTimeout(function () { burst(W * 0.5, 1); burst(W * 0.5, -1); }, 900);
+  }
+
+  var accent = "#b3123f";
+  var rafOn = false;
+  function frame() {
+    ctx.clearRect(0, 0, W, H);
+    if (!reduced) {
+      ctx.fillStyle = accent;
+      for (var i = 0; i < ambient.length; i++) {
+        var p = ambient[i];
+        p.y -= p.vy; p.ph += 0.01;
+        if (p.y < -30) { p.y = H + 30; p.x = Math.random() * W; }
+        ctx.globalAlpha = p.a;
+        heart(p.x + Math.sin(p.ph) * 18, p.y, p.s);
+      }
+    }
+    for (var j = bits.length - 1; j >= 0; j--) {
+      var b = bits[j];
+      b.vy += 0.32; b.vx *= 0.99; b.x += b.vx; b.y += b.vy; b.rot += b.vr;
+      if (b.vy > 0) b.life -= 0.008;
+      if (b.life <= 0 || b.y > H + 40) { bits.splice(j, 1); continue; }
+      ctx.globalAlpha = Math.max(0, Math.min(1, b.life * 1.4));
+      ctx.fillStyle = b.c;
+      if (b.heart) { heart(b.x, b.y, b.s); }
+      else {
+        ctx.save(); ctx.translate(b.x, b.y); ctx.rotate(b.rot);
+        ctx.fillRect(-b.s / 2, -b.s / 4, b.s, b.s / 2); ctx.restore();
+      }
+    }
+    ctx.globalAlpha = 1;
+    if (!document.hidden) requestAnimationFrame(frame);
+    else rafOn = false;
+  }
+  document.addEventListener("visibilitychange", function () {
+    if (!document.hidden && !rafOn) { rafOn = true; requestAnimationFrame(frame); }
+  });
+  window.addEventListener("resize", function () { size(); seedAmbient(); });
+
+  size();
+  accent = css("--accent") || accent;
+  seedAmbient();
+  renderStep();
+  resetNo();
+  rafOn = true;
+  requestAnimationFrame(frame);
+
+  if (window.matchMedia) {
+    var mq = window.matchMedia("(prefers-color-scheme: dark)");
+    var refresh = function () { accent = css("--accent") || accent; };
+    if (mq.addEventListener) mq.addEventListener("change", refresh);
+    new MutationObserver(refresh).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+  }
+})();
+</script>
+</body>
+</html>

@@ -25,9 +25,9 @@ Then follow steps 3 to 5 above.
 
 ## Add your own song
 
-1. Rename your audio file to `song.mp3` (`song.m4a`, `song.ogg` and `song.wav` also work).
-2. Create a folder named `music` in the repository, next to `index.html`, and put the file inside it, so the path is `music/song.mp3`.
-3. On GitHub's website, on a computer, drag the whole `music` folder into Add file, then Upload files, and commit. Or use git: `git add music/song.mp3`, `git commit` and `git push`.
+1. Rename your audio file to `music.mp3` (`music.m4a`, `music.ogg` and `music.wav` also work).
+2. Create a folder named `music` in the repository, next to `index.html`, and put the file inside it, so the path is `music/music.mp3`.
+3. On GitHub's website, on a computer, drag the whole `music` folder into Add file, then Upload files, and commit. Or use git: `git add music/music.mp3`, `git commit` and `git push`.
 
 The page plays that file on a loop. If no music file is found, it plays a built-in melody instead. Keep the file under about 10 MB so it loads quickly on a phone (GitHub's web upload limit is 25 MB per file).
 
