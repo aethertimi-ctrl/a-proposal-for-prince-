@@ -8,7 +8,7 @@
 <title>A Question for Prince</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,500;1,6..96,500&family=DM+Sans:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,500;1,6..96,500&family=DM+Sans:wght@400;500;700&family=Roboto+Slab:wght@800&display=swap">
 <style>
 /* Layout: one left-aligned column of large italic type, controls beneath it, soft hearts drifting behind. */
 :root {
@@ -58,7 +58,8 @@ body {
   font-family: var(--font-body);
   font-size: 16px;
   line-height: 1.5;
-  padding-block: 24px;
+  padding-top: 72px;
+  padding-bottom: 24px;
   padding-left: max(16px, env(safe-area-inset-left, 0px));
   padding-right: max(16px, env(safe-area-inset-right, 0px));
   overflow-x: hidden;
@@ -89,7 +90,8 @@ main {
   display: grid;
   align-content: center;
 }
-.screen { display: grid; gap: 1.75rem; min-width: 0; animation: rise .6s ease both; }
+.screen { display: grid; gap: 1.75rem; min-width: 0; animation: fade .5s ease both; }
+@keyframes fade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
 
 .eyebrow {
@@ -136,7 +138,7 @@ main {
 .btn:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
 .btn.fill { background: var(--accent); color: var(--accent-ink); }
 .btn.yes {
-  font-size: min(calc(1.05rem + var(--n, 0) * .22rem), 2.4rem);
+  font-size: min(calc(1.05rem + var(--n, 0) * .12rem), 1.8rem);
   padding: .65em 1.5em;
 }
 .btn.no.away {
@@ -157,9 +159,12 @@ main {
 .link:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
 .hint { min-height: 1.5em; margin: 0; color: var(--muted); font-size: .95rem; }
 .sign {
-  font-family: var(--font-display);
-  font-style: italic;
-  font-size: 1.5rem;
+  font-family: 'Roboto Slab', Rockwell, 'Courier New', Georgia, serif;
+  font-style: normal;
+  font-weight: 800;
+  font-size: 1.7rem;
+  letter-spacing: .01em;
+  text-transform: none;
   margin: 0;
 }
 
@@ -214,10 +219,10 @@ main {
   <span class="label">Music off</span>
 </button>
 <audio id="song" loop preload="none">
-  <source src="music.mp3" type="audio/mpeg">
-  <source src="music.m4a" type="audio/mp4">
-  <source src="music.ogg" type="audio/ogg">
-  <source src="music.wav" type="audio/wav">
+  <source src="music/song.mp3" type="audio/mpeg">
+  <source src="music/song.m4a" type="audio/mp4">
+  <source src="music/song.ogg" type="audio/ogg">
+  <source src="music/song.wav" type="audio/wav">
 </audio>
 <main id="app">
   <section class="screen" id="s-intro">
@@ -278,7 +283,7 @@ main {
   var yes = $("yes"), no = $("no"), hint = $("hint"), row = $("answers");
   var reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  var step = 0, tries = 0;
+  var step = 0, tries = 0, lastDodge = 0;
 
   function renderProgress() {
     progress.innerHTML = "";
@@ -329,13 +334,19 @@ main {
       no.classList.add("away");
       void no.offsetWidth;
     }
-    var yr = yes.getBoundingClientRect();
-    var x = m, y = m, i;
-    for (i = 0; i < 40; i++) {
-      x = m + Math.random() * Math.max(0, vw - w - 2 * m);
-      y = m + Math.random() * Math.max(0, vh - h - 2 * m);
-      var box = { left: x, top: y, right: x + w, bottom: y + h };
-      if (!overlaps(box, yr, 16)) break;
+    // Stay clear of the Yes button, the question text, the hint and the Music button.
+    var avoid = [yes, musicBtn, hint, sAsk.querySelector(".eyebrow"), sAsk.querySelector("h1")]
+      .map(function (e) { return e.getBoundingClientRect(); });
+    var x = vw - w - m, y = vh - h - m, i, j, clear;
+    for (i = 0; i < 80; i++) {
+      var cx = m + Math.random() * Math.max(0, vw - w - 2 * m);
+      var cy = m + Math.random() * Math.max(0, vh - h - 2 * m);
+      var box = { left: cx, top: cy, right: cx + w, bottom: cy + h };
+      clear = true;
+      for (j = 0; j < avoid.length; j++) {
+        if (overlaps(box, avoid[j], 14)) { clear = false; break; }
+      }
+      if (clear) { x = cx; y = cy; break; }
     }
     no.style.left = x + "px";
     no.style.top = y + "px";
@@ -343,6 +354,7 @@ main {
 
   function dodge() {
     if (tries >= MAX) return;
+    lastDodge = Date.now();
     tries++;
     app.style.setProperty("--n", tries);
     no.textContent = phrases[tries];
@@ -363,7 +375,8 @@ main {
     if (e.pointerType !== "mouse" && tries < MAX) { e.preventDefault(); dodge(); }
   });
   no.addEventListener("click", function () {
-    if (tries >= MAX) accept(); else dodge();
+    if (tries >= MAX) accept();
+    else if (Date.now() - lastDodge > 450) dodge();
   });
   yes.addEventListener("click", accept);
 
@@ -383,7 +396,12 @@ main {
   });
 
   window.addEventListener("resize", function () {
-    if (no.classList.contains("away")) moveNo();
+    if (no.classList.contains("away")) {
+      var maxX = Math.max(16, document.documentElement.clientWidth - no.offsetWidth - 16);
+      var maxY = Math.max(16, window.innerHeight - no.offsetHeight - 16);
+      no.style.left = Math.min(parseFloat(no.style.left) || 16, maxX) + "px";
+      no.style.top = Math.min(parseFloat(no.style.top) || 16, maxY) + "px";
+    }
   });
 
   /* ---------- music: a soft synthesized loop, no audio files ---------- */
@@ -450,7 +468,7 @@ main {
     }
   }
 
-  // A song file placed next to index.html (music.mp3, .m4a, .ogg or .wav) plays instead of the built-in melody.
+  // A song file in the music folder (music/song.mp3, .m4a, .ogg or .wav) plays instead of the built-in melody.
   var songEl = $("song"), songOk = null, songErrs = 0;
 
   function songFailed() {
@@ -470,10 +488,14 @@ main {
     musicBtn.setAttribute("aria-label", on ? "Turn music off" : "Turn music on");
     musicBtn.querySelector(".label").textContent = on ? "Music on" : "Music off";
     if (on) {
+      // Unlock audio inside the tap itself, so the built-in melody can still start on iPhones if the song file is missing.
+      try { if (!ac) setupAudio(); if (ac) ac.resume(); } catch (e) {}
       if (songOk === false) { synth(true); return; }
       try {
         var p = songEl.play();
-        if (p && p.catch) p.catch(function () { songFailed(); });
+        if (p && p.catch) p.catch(function (err) {
+          if (err && err.name === "NotSupportedError") songFailed();
+        });
       } catch (e) { songFailed(); }
     } else {
       try { songEl.pause(); } catch (e) {}
@@ -581,6 +603,7 @@ main {
   }
 
   var accent = "#b3123f";
+  var rafOn = false;
   function frame() {
     ctx.clearRect(0, 0, W, H);
     if (!reduced) {
@@ -608,9 +631,10 @@ main {
     }
     ctx.globalAlpha = 1;
     if (!document.hidden) requestAnimationFrame(frame);
+    else rafOn = false;
   }
   document.addEventListener("visibilitychange", function () {
-    if (!document.hidden) requestAnimationFrame(frame);
+    if (!document.hidden && !rafOn) { rafOn = true; requestAnimationFrame(frame); }
   });
   window.addEventListener("resize", function () { size(); seedAmbient(); });
 
@@ -619,6 +643,7 @@ main {
   seedAmbient();
   renderStep();
   resetNo();
+  rafOn = true;
   requestAnimationFrame(frame);
 
   if (window.matchMedia) {
